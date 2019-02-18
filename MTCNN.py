@@ -3,9 +3,6 @@
 
 # ###   Importing necessary library
 
-# In[2]:
-
-
 import os
 
 import tensorflow as tf
@@ -15,47 +12,21 @@ import numpy as np
 from PIL import Image
 import time
 import sys
-
-
-# In[3]:
-
+import cv2
 
 from sklearn.svm import SVC
-from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import SGDClassifier
 from sklearn.gaussian_process import GaussianProcessClassifier
-
-
-# In[4]:
 
 
 from collections import Counter
 from typing import List, Tuple
 
 
-# In[5]:
-
-
 from six import iteritems, string_types
 from matplotlib import pyplot as plt
 
-
-# In[6]:
-
-
-from __future__ import print_function
-from ipywidgets import interact, interactive, fixed, interact_manual
-import ipywidgets as widgets
-
-
-# In[7]:
-
-
 import pickle as pk
-
-
-# In[8]:
-
 
 FACE_PIC_SIZE = 160
 
@@ -75,28 +46,9 @@ SGD_CLASSIFY = 'SGD.CLASS'
 
 GPC_CLASSIFY = 'GPC.CLASS'
 
+MODEL_FILE_NAME = os.path.join('20180402-114759','20180402-114759.pb')
 
-# In[9]:
-
-
-PRETREINED_MODEL_DIR
-
-
-# In[10]:
-
-
-import cv2
-
-
-# ### Implementation of Layers
-
-# In[11]:
-
-
-padding = ['SAME','VALID']
-
-
-# In[12]:
+padding = ['SAME', 'VALID']
 
 
 def load(data_path, session, ignore_missing=False):
@@ -116,9 +68,6 @@ def load(data_path, session, ignore_missing=False):
                 except ValueError:
                     if not ignore_missing:
                         raise
-
-
-# In[13]:
 
 
 def conv(inpt, k_h, k_w, c_o, s_h, s_w, name, relu=True, padding=padding[0], group=1, biased=True):
@@ -150,9 +99,6 @@ def conv(inpt, k_h, k_w, c_o, s_h, s_w, name, relu=True, padding=padding[0], gro
         return output
 
 
-# In[14]:
-
-
 def prelu(inpt, name):
     """
     @inpt: input from previous layer
@@ -163,9 +109,6 @@ def prelu(inpt, name):
         alpha = tf.get_variable('alpha', shape=(i,))
         output = tf.nn.relu(inpt) + tf.multiply(alpha, -tf.nn.relu(-inpt))
     return output
-
-
-# In[15]:
 
 
 def max_pool(inpt, k_h, k_w, s_h, s_w, name, padding=padding[0]):
@@ -179,9 +122,6 @@ def max_pool(inpt, k_h, k_w, s_h, s_w, name, padding=padding[0]):
     @padding: Valid Padding ['SAME','VALID']
     """
     return tf.nn.max_pool(inpt, ksize=[1, k_h, k_w, 1],strides=[1, s_h, s_w, 1], padding=padding, name=name)
-
-
-# In[16]:
 
 
 def fully_connected(inpt, num_out, name, relu=True):
@@ -206,9 +146,6 @@ def fully_connected(inpt, num_out, name, relu=True):
         return fc
 
 
-# In[17]:
-
-
 def softmax(target, axis, name=None):
     """
     @target: target layer to apply softmax
@@ -225,9 +162,6 @@ def softmax(target, axis, name=None):
 # ## Implementation of MTCNN
 
 # ### P-Net ( Proposal - Network )
-
-# In[18]:
-
 
 def pNet(data):
     value = conv(data, 3, 3, 10, 1, 1, padding='VALID', relu=False, name='conv1')
@@ -740,19 +674,15 @@ def get_faces(image, threshold=0.5, minsize=20):
 
 # #### Using Pre-trained Inception-V3 Network Model
 
-# In[33]:
-
-
-MODEL_FILE_NAME = os.path.join('20180402-114759','20180402-114759.pb')
-MODEL_FILE_NAME
-
-
 # #### Loading pre - trained model
 
 # In[34]:
-
-
+global tf
+_tf = tf
+global sess
 sess = None
+
+
 def load_model(pb_file, input_map=None):
     global sess
     if sess is None:
@@ -769,7 +699,6 @@ load_model(os.path.join(PRETREINED_MODEL_DIR, MODEL_FILE_NAME))
 
 # In[35]:
 
-
 # inception net requires this
 def prewhiten(x):
     mean = np.mean(x)
@@ -780,8 +709,6 @@ def prewhiten(x):
 
 
 # In[36]:
-
-
 def embedding(face_np):
     """
     @face_np: cropped image as input
@@ -809,7 +736,7 @@ def embedding_size():
 
 # In[37]:
 
-
+# Low Accuracy of Detection using KNN classfier
 class KNN:
     def __init__(self, K=4, dist_threshold=12):
         
@@ -903,7 +830,7 @@ class KNN:
 # In[38]:
 
 
-def ClassifyTrainSVC():
+def classifyTrainSVC():
     embeds, names = load_embeddings_for_classfication()
     
     print(np.shape(embeds),len(names))
@@ -924,13 +851,6 @@ def ClassifyTrainSVC():
     with open(CLASSIFY_NAME, 'wb') as outfile:
         pk.dump((model,name_unique), outfile)
         print('Saved classifier model to file "%s"' % CLASSIFY_NAME)
-
-
-# In[106]:
-
-
-ClassifyTrainSVC()
-
 
 # ### SGD Classifier to recognize the faces
 
@@ -962,13 +882,6 @@ def classifyTrainSGD():
         pk.dump((model,name_unique), outfile)
         print('Saved classifier model to file "%s"' % SGD_CLASSIFY)
 
-
-# In[126]:
-
-
-classifyTrainSGD()
-
-
 # ### Gaussian Process Classifier
 
 # In[40]:
@@ -995,12 +908,6 @@ def classifyTrainGPC():
     with open(GPC_CLASSIFY, 'wb') as outfile:
         pk.dump((model,name_unique), outfile)
         print('Saved classifier model to file "%s"' % GPC_CLASSIFY)
-
-
-# In[128]:
-
-
-classifyTrainGPC()
 
 
 # ### Classifier Initialization
@@ -1097,9 +1004,6 @@ def train_classifier(name, faces, num = None, size = None):
 
 # ### Create embeddings from photos
 
-# In[45]:
-
-
 def create_embeddings_from_dataset():
     for filedir in os.listdir(os.path.join(os.getcwd(),'dataset')):
         img = []
@@ -1120,8 +1024,6 @@ def create_embeddings_from_dataset():
 
 
 # ### Save Embeddings during training of each image and providing user's name as embeddings filename
-
-# In[46]:
 
 
 def save_embedding(result,name):
@@ -1155,8 +1057,6 @@ def load_embeddings_for_classfication() -> ('embeddings','labels'):
     return X, Y
 
 
-# In[48]:
-
 
 def load_embeddings_for_KNN():
     for filename  in os.listdir(os.path.join(os.getcwd(),'embeddings')):
@@ -1170,320 +1070,79 @@ def load_embeddings_for_KNN():
 
 # ### Training the classifier
 
-# In[49]:
-
-
-# create_embeddings_from_dataset()
-
-
-# In[50]:
-
-
-# ClassifyTrainSVC()
-
-
-# ### DEMO
-
-# ### Face Recognition 
-
-# ### Face Recognition using KNN Classifier
-
-# In[51]:
-
-
-user_name = 'Aaditya'
-
-
-# In[118]:
-
-
-capture = cv2.VideoCapture(0)
-cv2.namedWindow("test")
-# cv2.namedWindow("test")
-images = []
-try:
-    while (capture.isOpened()):
-        ret, img = capture.read()
-        img = cv2.flip(img, 1)
-        if img is None:
-            continue
-
-        k = cv2.waitKey(1)
-
-        if k%256 == 27:
-#             ESC pressed
-            print("Escape hit, closing...")
-            break
-            
-#             T keyword pressed
-        if k == ord('t'):
-            print(train_classifier(user_name, images))
-
-#             space pressed
-        if k%256 == 32:
-            plt.figure()
-            plt.subplot()
-            image  = Image.fromarray(cv2.cvtColor(img,cv2.COLOR_BGR2RGB))
-            face = get_faces(image)[0]
-            coords = (face.x,face.y,face.x+face.w,face.y+face.h)
-            image = image.crop(coords)
-            plt.imshow(image)
-            plt.show()
-#             very very important resize to 160 by 160 before feeding it to network
-            image = image.resize((160,160))
-            print(image.size)
-            images.append(image)
-            print(len(images))
-            
-#         Initialize video writing
-        t1 = time.time()
-#         faces = get_faces(Image.fromarray(cv2.cvtColor(img,cv2.COLOR_BGR2RGB)))
-        faces = recognize(get_faces(Image.fromarray(cv2.cvtColor(img,cv2.COLOR_BGR2RGB))))
-
-        for face in faces:
-            cv2.rectangle(img, (int(face.x), int(face.y)), (int(face.x+face.w), int(face.y+face.h)), (0,155,255), 2)
-            cv2.putText(img, face.name, (int(face.x), int(face.y)),cv2.FONT_HERSHEY_SIMPLEX,0.6,(255, 255, 255))
-#             print(face.data())
-        cv2.imshow('face',img)
-except Exception as  err:
-    print(err.with_traceback())
-    print('This is Error Occur !')
-finally:
-    images = []
-    capture.release()
-    cv2.destroyAllWindows()
-
-
-# ### Face Recognition Using SVC classifier
-
-# In[52]:
-
-
-capture = cv2.VideoCapture(0)
-cv2.namedWindow("test")
-with open(CLASSIFY_NAME, 'rb') as infile:
-    (classifymodel, class_names) = pk.load(infile)
-try:
-    while (capture.isOpened()):
-        t1 = cv2.getTickCount()
-        ret, img = capture.read()
-#         img = cv2.flip(img, 1)
-
-        if img is None:
-            continue
-
-        k = cv2.waitKey(1)
-
-        if k%256 == 27:
-#             ESC pressed
-            print("Escape hit, closing...")
-            break
-        
-#         faces = get_faces(Image.fromarray(cv2.cvtColor(img,cv2.COLOR_BGR2RGB)))
-        faces = get_faces(Image.fromarray(cv2.cvtColor(img,cv2.COLOR_BGR2RGB)))
-        t2 = cv2.getTickCount()
-        t = (t2 - t1) / cv2.getTickFrequency()
-        fps = 1.0 / t
-        cv2.putText(img, '{:.4f}'.format(t) + " " + '{:.3f}'.format(fps), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                    (255, 0, 255), 2)
-        
-        for face in faces:
-            tmp = Image.fromarray(cv2.cvtColor(img,cv2.COLOR_BGR2RGB))
-            tmp = tmp.crop((face.x,face.y,face.x+face.w,face.y+face.h)).resize((160,160))
-            
-            embvector = embedding(img_to_np(tmp))
-            embvector = embvector.reshape(1, -1)
-            predictions = classifymodel.predict_proba(embvector)
-            best_class_indices = np.argmax(predictions, axis=1)
-            tmp_lable=class_names[best_class_indices]
-            best_class_probabilities = predictions[np.arange(len(best_class_indices)), best_class_indices]
-            print(' Best class Probablity is ',best_class_probabilities)
-            print(tmp_lable)
-            if best_class_probabilities <= 0.48:
-                tmp_lable=["others"]
-            cv2.rectangle(img, (int(face.x), int(face.y)), (int(face.x+face.w), int(face.y+face.h)), (0,155,255), 2)
-            cv2.putText(img, tmp_lable[0], (int(face.x), int(face.y)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 255), 2)
-# #             print(face.data())
-        cv2.imshow('face',img)
-except Exception as  err:
-    print(err.with_traceback())
-    print('This is Error Occur !')
-finally:
-    images = []
-    capture.release()
-    cv2.destroyAllWindows()
-
-
-# ### Face Recognization using SGD Classifier
-
-# In[53]:
-
-
-capture = cv2.VideoCapture(0)
-cv2.namedWindow("test")
-with open(SGD_CLASSIFY, 'rb') as infile:
-    (classifymodel, class_names) = pk.load(infile)
-try:
-    while (capture.isOpened()):
-        t1 = cv2.getTickCount()
-        ret, img = capture.read()
-#         img = cv2.flip(img, 1)
-
-        if img is None:
-            continue
-
-        k = cv2.waitKey(1)
-
-        if k%256 == 27:
-#             ESC pressed
-            print("Escape hit, closing...")
-            break
-        
-#         faces = get_faces(Image.fromarray(cv2.cvtColor(img,cv2.COLOR_BGR2RGB)))
-        faces = get_faces(Image.fromarray(cv2.cvtColor(img,cv2.COLOR_BGR2RGB)))
-        t2 = cv2.getTickCount()
-        t = (t2 - t1) / cv2.getTickFrequency()
-        fps = 1.0 / t
-        cv2.putText(img, '{:.4f}'.format(t) + " " + '{:.3f}'.format(fps), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                    (255, 0, 255), 2)
-        
-        for face in faces:
-            tmp = Image.fromarray(cv2.cvtColor(img,cv2.COLOR_BGR2RGB))
-            tmp = tmp.crop((face.x,face.y,face.x+face.w,face.y+face.h)).resize((160,160))
-            
-            embvector = embedding(img_to_np(tmp))
-            embvector = embvector.reshape(1, -1)
-            predictions = classifymodel.predict_proba(embvector)
-            best_class_indices = np.argmax(predictions, axis=1)
-            tmp_lable=class_names[best_class_indices]
-            best_class_probabilities = predictions[np.arange(len(best_class_indices)), best_class_indices]
-            print(' Best class Probablity is ',best_class_probabilities)
-            print(tmp_lable)
-            if best_class_probabilities <= 0.64:
-                tmp_lable=["others"]
-            cv2.rectangle(img, (int(face.x), int(face.y)), (int(face.x+face.w), int(face.y+face.h)), (0,155,255), 2)
-            cv2.putText(img, tmp_lable[0], (int(face.x), int(face.y)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 255), 2)
-# #             print(face.data())
-        cv2.imshow('face',img)
-except Exception as  err:
-    print(err.with_traceback())
-    print('This is Error Occur !')
-finally:
-    images = []
-    capture.release()
-    cv2.destroyAllWindows()
-
-
-# ### Using Gaussian Process Classifier to Recognize the face
-
-# In[129]:
-
-
-capture = cv2.VideoCapture(0)
-cv2.namedWindow("test")
-with open(GPC_CLASSIFY, 'rb') as infile:
-    (classifymodel, class_names) = pk.load(infile)
-try:
-    while (capture.isOpened()):
-        t1 = cv2.getTickCount()
-        ret, img = capture.read()
-#         img = cv2.flip(img, 1)
-
-        if img is None:
-            continue
-
-        k = cv2.waitKey(1)
-
-        if k%256 == 27:
-#             ESC pressed
-            print("Escape hit, closing...")
-            break
-        
-#         faces = get_faces(Image.fromarray(cv2.cvtColor(img,cv2.COLOR_BGR2RGB)))
-        faces = get_faces(Image.fromarray(cv2.cvtColor(img,cv2.COLOR_BGR2RGB)))
-        t2 = cv2.getTickCount()
-        t = (t2 - t1) / cv2.getTickFrequency()
-        fps = 1.0 / t
-        cv2.putText(img, '{:.4f}'.format(t) + " " + '{:.3f}'.format(fps), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5,
-                    (255, 0, 255), 2)
-        
-        for face in faces:
-            tmp = Image.fromarray(cv2.cvtColor(img,cv2.COLOR_BGR2RGB))
-            tmp = tmp.crop((face.x,face.y,face.x+face.w,face.y+face.h)).resize((160,160))
-            
-            embvector = embedding(img_to_np(tmp))
-            embvector = embvector.reshape(1, -1)
-            predictions = classifymodel.predict_proba(embvector)
-            best_class_indices = np.argmax(predictions, axis=1)
-            tmp_lable=class_names[best_class_indices]
-            best_class_probabilities = predictions[np.arange(len(best_class_indices)), best_class_indices]
-            print(' Best class Probablity is ',best_class_probabilities)
-            print(tmp_lable)
-            if best_class_probabilities <= 0.48:
-                tmp_lable=["others"]
-            cv2.rectangle(img, (int(face.x), int(face.y)), (int(face.x+face.w), int(face.y+face.h)), (0,155,255), 2)
-            cv2.putText(img, tmp_lable[0], (int(face.x), int(face.y)), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 0, 255), 2)
-# #             print(face.data())
-        cv2.imshow('face',img)
-except Exception as  err:
-    print(err.with_traceback())
-    print('This is Error Occur !')
-finally:
-    images = []
-    capture.release()
-    cv2.destroyAllWindows()
-
-
-# In[45]:
-
-
-tf.summary.FileWriter('./logdir',tf.get_default_graph())
-
-
-# ### run load_embeddings only one times  during starting of kernel
-
-# In[48]:
-
-
-load_embeddings()
-
-
-# ###  EXPERIMENTATION
-
-# ###  EXPERIMENTATION with classfication
-# 
-# ### Finding best parameter for Image Recognition
-
-# In[98]:
-
-
-embeds, names = load_embeddings_for_SVC()
-    
-name_unique = np.unique(names)
-
-#     label Encoder
-labels = []
-for i in range(len(names)):
-        for j in range(len(name_unique)):
-            if names[i]==name_unique[j]:
-                labels.append(j)
-
-#     Training classifier
-param_grid = {'C': [1e3, 5e3, 1e4, 5e4, 1e5],
-              'gamma': [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.1],
-             'random_state':[i for i in range(0,100,10)]}
-
-clf = GridSearchCV(SVC(kernel='rbf', class_weight='balanced'),
-                   param_grid, cv=5)
-clf = clf.fit(X=embeds,y=labels)
-
-print('Training classifier')
-print("Best estimator found by grid search:")
-print(clf.best_estimator_)
-
-
-# In[ ]:
-
-
-
-
+def train_list_classifier(img_sprite, name, num, size, cls='SVC'):
+    """
+    :param img_sprite: sprite of image to be trained with
+    :param name: Detected user name for training
+    :param num: number of image
+    :param size: size of each image to be trained
+    :return:
+    """
+    # update classifier
+    faces = []
+    for i in range(int(num)):
+        faces.append(img_sprite.crop((
+            size * i,
+            0,
+            size * (i + 1),
+            size
+        )))
+
+    num = len(faces)
+    # do embedding for all faces
+    X = np.zeros((num, EMBEDDING_SIZE), np.float32)
+    for i, f in enumerate(faces):
+        X[i, :] = embedding(img_to_np(f))
+
+    save_embedding(X,name)
+    if cls == 'SVC':
+        classifyTrainSVC()
+    elif cls == 'SGD':
+        classifyTrainSGD()
+    else:
+        classifyTrainSVC()
+
+        return
+
+def show_trained_dataset():
+    result = {}
+    for filename in os.listdir(os.path.join(os.getcwd(), 'embeddings')):
+        name = filename.split('_')[0]
+        with open(os.path.join(os.getcwd(), 'embeddings', filename), mode='rb') as fp:
+            x = pk.load(fp)
+            result[name] = len(x)
+
+    return result
+
+
+def recognize_faces(faces, img,cls='SVC'):
+    if cls == "SVC":
+        classifier = CLASSIFY_NAME
+    else:
+        classifier = SGD_CLASSIFY
+
+    with open(classifier, 'rb') as infile:
+        (classifymodel, class_names) = pk.load(infile)
+    result = []
+    for face in faces:
+        tmp = Image.fromarray(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
+        tmp = tmp.crop((face.x, face.y, face.x + face.w, face.y + face.h)).resize((160, 160))
+
+        embvector = embedding(img_to_np(tmp))
+        embvector = embvector.reshape(1, -1)
+        predictions = classifymodel.predict_proba(embvector)
+        best_class_indices = np.argmax(predictions, axis=1)
+        tmp_lable = class_names[best_class_indices]
+        best_class_probabilities = predictions[np.arange(len(best_class_indices)), best_class_indices]
+        print(' Best class Probablity is ', best_class_probabilities)
+        print(tmp_lable)
+        if best_class_probabilities <= 0.64:
+            tmp_lable = ["others"]
+        result.append({'x':face.x,'y':face.y,'w':face.w,'h':face.h,'name':tmp_lable})
+
+    return result
+
+
+# classifyTrainSGD()
+# classifyTrainSVC()
+# classifyTrainGPC()

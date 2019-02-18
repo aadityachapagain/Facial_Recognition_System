@@ -6,10 +6,11 @@ from flask import Flask, request, render_template
 
 # assuming that script is run from `server` dir
 import sys, os
-sys.path.append(os.path.realpath('..'))
 
-from MTCNN import get_faces
-from MTCNN import recognize, train_classifier
+from MTCNN import get_faces, recognize_faces
+from MTCNN import train_list_classifier
+
+sys.path.append(os.path.realpath('..'))
 
 # For test examples acquisition
 SAVE_DETECT_FILES = False
@@ -32,7 +33,7 @@ def after_request(response):
 
 @app.route('/')
 def index():
-    return render_template('./static/detect.html')
+    return render_template('detect.html')
 
 
 @app.route('/detect', methods=['POST'])
@@ -48,9 +49,9 @@ def detect():
         else:
             threshold = float(threshold)
 
-        faces = recognize(get_faces(image, threshold))
+        faces = recognize_faces(get_faces(image, threshold),image,cls='SGD')
 
-        j = json.dumps([f.data() for f in faces])
+        j = json.dumps(faces)
         print("Result:", j)
 
         # save files
@@ -88,7 +89,7 @@ def train():
         if SAVE_TRAIN_FILES:
             image_sprite.save('train_{}_{}_{}.png'.format(name, size, num))
 
-        info = train_classifier(name, image_sprite, num, size)
+        info = train_list_classifier(name, image_sprite, num, size)
         return json.dumps([{'name': n, 'train_examples': s} for n, s in info.items()])
 
     except Exception as e:

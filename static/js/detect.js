@@ -67,20 +67,11 @@ function drawBoxes(objects) {
         } else {
             x = _x
         }
-
-        let rand_conf = face.confidence.toFixed(2);
-        let title = "" + rand_conf + "";
+        let title = "";
         if (face.name != "unknown") {
             drawCtx.strokeStyle = "magenta";
             drawCtx.fillStyle = "magenta";
             title += ' - ' + face.name
-            if (face.predict_proba > 0.0 ) {
-                title += "[" + face.predict_proba.toFixed(2) + "]";
-            }
-        } else {
-            drawCtx.strokeStyle = "cyan";
-            drawCtx.fillStyle = "cyan";
-        }
         drawCtx.fillText(title , x + 5, y - 5);
         drawCtx.strokeRect(x, y, width, height);
 

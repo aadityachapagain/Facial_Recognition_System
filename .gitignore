@@ -9,3 +9,6 @@ temp/
 
 .idea/
 __pycache__/
+
+celeb_dataset/
+celeb_emb/

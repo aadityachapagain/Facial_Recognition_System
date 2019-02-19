@@ -7,11 +7,8 @@ import os
 
 import tensorflow as tf
 
-from typing import List
 import numpy as np
 from PIL import Image
-import time
-import sys
 import cv2
 
 from sklearn.svm import SVC
@@ -23,8 +20,7 @@ from collections import Counter
 from typing import List, Tuple
 
 
-from six import iteritems, string_types
-from matplotlib import pyplot as plt
+from six import iteritems
 
 import pickle as pk
 
@@ -1146,3 +1142,13 @@ def recognize_faces(faces, img,cls='SVC'):
 # classifyTrainSGD()
 # classifyTrainSVC()
 # classifyTrainGPC()
+from Experiments import VideoGet, VideoShow, CountsPerSec
+
+def putIterationsPerSec(frame, iterations_per_sec):
+    """
+    Add iterations per second text to lower-left corner of a frame.
+    """
+
+    cv2.putText(frame, "{:.0f} iterations/sec".format(iterations_per_sec), (100, 450), cv2.FONT_HERSHEY_SIMPLEX, 0.7,
+                (255, 255, 255))
+    return frame

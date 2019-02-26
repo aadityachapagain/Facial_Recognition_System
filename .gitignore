@@ -5,6 +5,8 @@ cifar-10-batches-py/
 *.tar.gz
 temp/
 
+*.json
+dataset/
 20180402-114759.zip
 
 .idea/
@@ -22,3 +24,7 @@ static/
 attendance.json
 emo_data/
 fer2013/
+*.CLASS
+*.SVC
+*.SGD
+

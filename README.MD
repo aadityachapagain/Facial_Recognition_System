@@ -13,6 +13,10 @@ The idea is to build application for a real-time attendence system using face de
 
 ![](./examples/image_1.png)
 
+![](./examples/image_2.png)
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/wkmn1nWTeIg" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
 ## Applications
 * Access and Security
 * Criminal Identification

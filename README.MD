@@ -11,7 +11,7 @@ The idea is to build application for a real-time attendence system using face de
 
 ## Project Examples
 
-![](image_1.png)
+![](./examples/image_1.png)
 
 ## Applications
 * Access and Security

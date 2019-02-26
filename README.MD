@@ -15,7 +15,7 @@ The idea is to build application for a real-time attendence system using face de
 
 ![](./examples/image_2.png)
 
-[![Audi R8]http://img.youtube.com/vi/{wkmn1nWTeIg}/0.jpg](https://www.youtube.com/watch?v=KOxbO0EI4MA "Face Recognition")
+[![Audi R8]http://img.youtube.com/vi/wkmn1nWTeIg/0.jpg](https://www.youtube.com/watch?v=KOxbO0EI4MA "Face Recognition")
 
 ## Applications
 * Access and Security

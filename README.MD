@@ -9,6 +9,18 @@ The idea is to build application for a real-time attendence system using face de
 * PIL
 * Sklearn
 
+## Project Examples
+
+![](image_1.png)
+
+## Applications
+* Access and Security
+* Criminal Identification
+* Healthcare
+* Payments
+* Photo management Apps
+
+
 ## ToDos
 - [x] Face Detection
 - [x] face Classification

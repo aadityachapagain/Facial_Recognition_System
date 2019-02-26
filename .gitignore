@@ -10,6 +10,10 @@ temp/
 .idea/
 __pycache__/
 
+celeb/
+MNIST_data/
+embeddings/
+pretrained_models/
 celeb_dataset/
 celeb_emb/
 templates/

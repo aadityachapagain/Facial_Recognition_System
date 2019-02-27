@@ -22,7 +22,7 @@ The idea is to build application for a real-time attendence system using face de
 
 For Face Detection Purpose I used MTCNN network which composed of three cascaded network P-Net, R-Net and O-Net.And to supress the Overlapping Region of Faces I used NMS ( Non-Maximum Supression ) Algorithm to avoid overlapping Region which Represent same Face.
 
-![https://kpzhang93.github.io/MTCNN_face_detection_alignment/paper/spl.pdf](./examples/MTCNN.png)
+![https://kpzhang93.github.io/MTCNN_face_detection_alignment/paper/spl.pdf](./examples/MTCNN.PNG)
 
 
 ### Face Embeddings Generation Using Res-Net 

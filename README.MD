@@ -31,10 +31,10 @@ I used Res-Net for Embeddings Generation of input image which will generate 512 
 
 ### Using Triplet Loss ( Siamese Network ) for Face Recognition
 
-So, first I used Triplet Loss to recognize the faces of each trained Individual but deu to some disadvantages of network like when Network is huge for small part of task like Face Recognition and when data's grow larger including trained faces more than like 200 it will take huge amount of time since it works by calculating distance between Anchor image and every trained image in database. Hence this methods needs lots of computation processing when trained faces grow larger. Well Most Important advantage of this method is that this is most accurate method.
+So, first I used Triplet Loss to recognize the faces of each trained Individual using Siamese network but for small data we can always use Machine learning models when User Information grow larger then we have to use larger and efficent network like siamese network.
 
 ### Using Machine learning Classifier
-So, I used SVM and RandomForrest machine learning model to train the faces with corresponding labels and used in Face Recognition tasks.
+So,I used SVM and RandomForrest machine learning model to train the faces with corresponding labels and used in Face Recognition tasks.
 
 ## Applications
 * Access and Security

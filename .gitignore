@@ -27,4 +27,9 @@ fer2013/
 *.CLASS
 *.SVC
 *.SGD
+MTCNN_test.*
 
+TF-1.ipynb
+DB.ipynb
+RFC.FF
+Classsification.ipynb

@@ -9,6 +9,10 @@ The idea is to build application for a real-time attendence system using face de
 * PIL
 * Sklearn
 
+You can download the weights of pretrained model of MTCNN and Siamese network using download_weights.ipynb notebook file in this repo[Link for downloading weights here !](https://github.com/aadityachapagain/Facial_Recognition_System/blob/master/weight_download.ipynb)
+
+For Siamese network I used pretrained facenet model. [Click here](https://github.com/davidsandberg/facenet) for link of original github link of facenet model.
+
 ## Project Examples
 
 ![](./examples/image_1.png)
@@ -22,10 +26,11 @@ The idea is to build application for a real-time attendence system using face de
 
 For Face Detection Purpose I used MTCNN network which composed of three cascaded network P-Net, R-Net and O-Net.And to supress the Overlapping Region of Faces I used NMS ( Non-Maximum Supression ) Algorithm to avoid overlapping Region which Represent same Face.
 
+Picture below contain the original link of MTCNN paper which contain all the Mathematical intuition. 
 ![https://kpzhang93.github.io/MTCNN_face_detection_alignment/paper/spl.pdf](./examples/MTCNN.PNG)
 
 
-### Face Embeddings Generation Using Res-Net 
+### Face Embeddings Generation Using Res-Net
 
 I used Res-Net for Embeddings Generation of input image which will generate 512 features embeddings of user face which is used to Recognize the Person.
 
